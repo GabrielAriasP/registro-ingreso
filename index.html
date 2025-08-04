@@ -17,71 +17,36 @@
         <button type="submit">Registrar</button>
     </form>
     <p id="mensaje"></p>
-    
-   <script>
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQqdJUWByFwR8o1TklqmKSDXmf8NSRDnWW4D6PLwoaT0NedOfdx9iu8UTwEraWgppwollXWjBVK5w03/pub?output=csv';
 
-    document.getElementById('registroForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    <script>
+        const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwlAtUcYxILxyQSw6BNwu22fME_vW34x4X6dAJ4lbpdejR8qRfWYtLLTVzWB_oFJjUj/exec';
 
-        const nombre = document.getElementById('nombre').value;
-        const tipo = document.getElementById('tipo').value;
-        const patente = document.getElementById('patente').value;
-        const punto = document.getElementById('punto').value;
-        const hora = new Date().toLocaleString();
+        document.getElementById('registroForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        fetch('https://script.google.com/macros/s/AKfycbwlAtUcYxILxyQSw6BNwu22fME_vW34x4X6dAJ4lbpdejR8qRfWYtLLTVzWB_oFJjUj/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, tipo, patente, punto, hora })
-        })
-        .then(() => {
-            document.getElementById('mensaje').innerText = 'Registro enviado correctamente.';
-            document.getElementById('registroForm').reset();
-            actualizarTabla(); // Refrescar después de enviar
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('mensaje').innerText = 'Error al enviar el registro.';
-        });
-    });
+            const nombre = document.getElementById('nombre').value;
+            const tipo = document.getElementById('tipo').value;
+            const patente = document.getElementById('patente').value;
+            const punto = document.getElementById('punto').value;
+            const hora = new Date().toLocaleString();
 
-    function actualizarTabla() {
-        fetch(CSV_URL)
-            .then(response => response.text())
-            .then(csvText => {
-                const lines = csvText.split('\n').filter(line => line.trim() !== '');
-                const tbody = document.querySelector('#tablaRegistros tbody');
-                tbody.innerHTML = '';
-
-                // Saltar la cabecera
-                for (let i = 1; i < lines.length; i++) {
-                    const columns = lines[i].split(',');
-                    if (columns.length >= 5) {
-                        const row = `<tr>
-                                        <td>${columns[0]}</td>
-                                        <td>${columns[1]}</td>
-                                        <td>${columns[2]}</td>
-                                        <td>${columns[3]}</td>
-                                        <td>${columns[4]}</td>
-                                     </tr>`;
-                        tbody.innerHTML += row;
-                    }
-                }
+            fetch(WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, tipo, patente, punto, hora })
+            })
+            .then(() => {
+                document.getElementById('mensaje').innerText = 'Registro enviado correctamente.';
+                document.getElementById('registroForm').reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('mensaje').innerText = 'Error al enviar el registro.';
             });
-    }
-
-    document.getElementById('exportar').addEventListener('click', function() {
-        window.open(CSV_URL, '_blank');
-    });
-
-    // Actualización automática cada 5 segundos
-    setInterval(actualizarTabla, 5000);
-    actualizarTabla(); // Cargar al inicio
-</script>
+        });
+    </script>
 </body>
 </html>
-
 
 
