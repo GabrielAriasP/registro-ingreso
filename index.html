@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Ingreso</title>
+</head>
+<body>
+    <h2>Registro de Ingreso</h2>
+    <form id="registroForm">
+        <input type="text" id="nombre" placeholder="Nombre" required><br>
+        <select id="tipo" required>
+            <option value="Peatonal">Peatonal</option>
+            <option value="Vehicular">Vehicular</option>
+        </select><br>
+        <input type="text" id="patente" placeholder="Patente"><br>
+        <input type="text" id="punto" placeholder="Punto de Ingreso" required><br>
+        <button type="submit">Registrar</button>
+    </form>
+    <p id="mensaje"></p>
+
+    <script>
+        document.getElementById('registroForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('nombre').value;
+            const tipo = document.getElementById('tipo').value;
+            const patente = document.getElementById('patente').value;
+            const punto = document.getElementById('punto').value;
+            const hora = new Date().toLocaleString();
+
+            fetch('https://script.google.com/macros/s/AKfycby195WO2r1wrR2MqfK8Pui3kDFLynXE9Bin0tW0eC6K7KdjNgmKPrZ1JTdaNL0RPaMclw/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, tipo, patente, punto, hora })
+            })
+            .then(() => {
+                document.getElementById('mensaje').innerText = 'Registro enviado correctamente.';
+                document.getElementById('registroForm').reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('mensaje').innerText = 'Error al enviar el registro.';
+            });
+        });
+    </script>
+</body>
+</html>
