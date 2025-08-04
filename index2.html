@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Ingreso</title>
+</head>
+<body>
+    <h2>Registro de Ingreso</h2>
+    <form id="registroForm">
+        <input type="text" id="nombre" placeholder="Nombre" required><br>
+        <input type="text" id="rut" placeholder="RUT" required><br>
+        <input type="text" id="empresa" placeholder="Empresa" required><br>
+
+        <label for="tipo">Tipo de Ingreso:</label><br>
+        <select id="tipo" required>
+            <option value="">Seleccionar</option>
+            <option value="Peatonal">Peatonal</option>
+            <option value="Vehicular">Vehicular</option>
+        </select><br>
+
+        <div id="patenteDiv" style="display:none;">
+            <input type="text" id="patente" placeholder="Patente"><br>
+        </div>
+
+        <label for="punto">Punto de Ingreso:</label><br>
+        <select id="punto" required>
+            <option value="">Seleccionar</option>
+            <option value="Charly 2">Charly 2</option>
+            <option value="Charly 3">Charly 3</option>
+        </select><br>
+
+        <button type="submit">Registrar</button>
+    </form>
+    <p id="mensaje"></p>
+
+    <script>
+        const WEBAPP_URL = 'TU_URL_DEL_WEBAPP';
+
+        // Mostrar/ocultar patente si elige Vehicular
+        document.getElementById('tipo').addEventListener('change', function() {
+            const patenteDiv = document.getElementById('patenteDiv');
+            if (this.value === 'Vehicular') {
+                patenteDiv.style.display = 'block';
+                document.getElementById('patente').setAttribute('required', 'required');
+            } else {
+                patenteDiv.style.display = 'none';
+                document.getElementById('patente').removeAttribute('required');
+            }
+        });
+
+        document.getElementById('registroForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nombre = document.getElementById('nombre').value;
+            const rut = document.getElementById('rut').value;
+            const empresa = document.getElementById('empresa').value;
+            const tipo = document.getElementById('tipo').value;
+            const patente = tipo === 'Vehicular' ? document.getElementById('patente').value : '';
+            const punto = document.getElementById('punto').value;
+            const hora = new Date().toLocaleString();
+
+            fetch(WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, rut, empresa, tipo, patente, punto, hora })
+            })
+            .then(() => {
+                document.getElementById('mensaje').innerText = 'Registro enviado correctamente.';
+                document.getElementById('registroForm').reset();
+                document.getElementById('patenteDiv').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('mensaje').innerText = 'Error al enviar el registro.';
+            });
+        });
+    </script>
+</body>
+</html>
