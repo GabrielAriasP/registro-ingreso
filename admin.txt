@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+        .admin-container { background: white; padding: 20px; border-radius: 10px; max-width: 800px; margin: 20px auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <h2>Panel de Administración</h2>
+    <button id="exportar">Exportar a Excel</button>
+    <table id="tablaRegistros">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Patente</th>
+                <th>Punto</th>
+                <th>Hora</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQqdJUWByFwR8o1TklqmKSDXmf8NSRDnWW4D6PLwoaT0NedOfdx9iu8UTwEraWgppwollXWjBVK5w03/pubhtml';
+
+    function actualizarTabla() {
+        fetch(CSV_URL)
+            .then(response => response.text())
+            .then(csvText => {
+                const lines = csvText.split('\\n').filter(line => line.trim() !== '');
+                const tbody = document.querySelector('#tablaRegistros tbody');
+                tbody.innerHTML = '';
+
+                for (let i = 1; i < lines.length; i++) {
+                    const columns = lines[i].split(',');
+                    if (columns.length >= 5) {
+                        const row = `<tr>
+                                        <td>${columns[0]}</td>
+                                        <td>${columns[1]}</td>
+                                        <td>${columns[2]}</td>
+                                        <td>${columns[3]}</td>
+                                        <td>${columns[4]}</td>
+                                     </tr>`;
+                        tbody.innerHTML += row;
+                    }
+                }
+            });
+    }
+
+    document.getElementById('exportar').addEventListener('click', function() {
+        window.open(CSV_URL, '_blank');
+    });
+
+    setInterval(actualizarTabla, 5000);
+    actualizarTabla();
+</script>
+
+</body>
+</html>
